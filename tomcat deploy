@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('git checkout') {
+            steps {
+             git 'https://github.com/KEOgin222000/addressbook-cicd-project.git'
+            }
+        }    
+        stage('Build & package') {
+             steps {
+                 sh 'mvn package'
+            }
+        }    
+        stage('Archieve artifacts') {
+            steps{
+                archiveArtifacts artifacts: 'target/*war', followSymlinks: false
+            }
+        }    
+        stage('deployment') {
+            steps{
+                deploy adapters :[tomcat3(uhttp :'//44.211.190.218:8080/',credentialsid :"tomcat3")]war :'target/*.war',contextpath: 'app'
+            }
+        }                  
+    }
+}
